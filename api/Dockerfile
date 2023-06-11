@@ -1,17 +1,14 @@
-FROM python:3.7-alpine
+FROM python:3.8-slim
 
-WORKDIR /
+WORKDIR /app
 
-ENV FLASK_APP=app.py
-
-RUN apk add --no-cache gcc musl-dev linux-headers
-
-COPY requirements.txt requirements.txt
+# Install pip requirements
+COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
-EXPOSE 5000
+COPY . /app
 
-COPY . .
+EXPOSE 5000
 
 CMD ["flask", "run", "--host", "0.0.0.0"]
