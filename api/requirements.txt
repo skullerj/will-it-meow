@@ -2,3 +2,4 @@ flask
 pillow
 transformers
 torch
+flask-cors
