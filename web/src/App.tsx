@@ -35,15 +35,15 @@ function App() {
       <h1 className="text-6xl">
         Will it <br /> Meow?
       </h1>
-      <div
-        className="h-60 w-60 rounded-full relative cursor-pointer overflow-hidden"
+      <button
+        className="h-60 w-60 rounded-full relative cursor-pointer overflow-hidden group"
         onClick={onTestClick}
       >
-        <img src={cat1} className="h-full w-full object-cover" />
-        <div className="absolute bg-black h-full w-full top-0 left-0 bg-opacity-20 grid place-items-center md:opacity-0 md:hover:opacity-100 transition-all">
+        <img src={cat1} className="h-full w-full object-cover" alt="A cat" />
+        <div className="absolute bg-black h-full w-full top-0 left-0 bg-opacity-20 grid place-items-center md:opacity-0 md:hover:opacity-100 transition-all group-focus:opacity-100">
           <p className="text-white">Meow?</p>
         </div>
-      </div>
+      </button>
       <UploadButton onResponse={handleResponse} />
       <ResultModal
         visible={isModalVisible}

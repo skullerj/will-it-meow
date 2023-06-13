@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { DoesItMeowResponse } from "./utils";
 import JSConfetti from "js-confetti";
 
@@ -13,6 +13,7 @@ type ResultProps = {
 const confetti = new JSConfetti();
 
 function ResultModal({ result, visible, onClose }: ResultProps) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (visible && result.isCat) {
       confetti.addConfetti({
@@ -25,6 +26,27 @@ function ResultModal({ result, visible, onClose }: ResultProps) {
       confetti.clearCanvas();
     };
   }, [result.isCat, visible]);
+
+  useEffect(() => {
+    // Listen for the escape key and close the modal
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [onClose]);
+
+  useEffect(() => {
+    // Focus the modal button when it opens
+    if (visible) {
+      buttonRef.current?.focus();
+    }
+  }, [visible]);
+
   return (
     <div
       data-te-modal-init
@@ -36,17 +58,23 @@ function ResultModal({ result, visible, onClose }: ResultProps) {
       role="dialog"
       aria-data-success={result.isCat}
       onClick={onClose}
+      tabIndex={-1}
     >
       <div className="relative flex w-fit items-center bg-white shadow-lg rounded-md">
         <div className="flex flex-col p-6 items-center gap-4">
-          <h4 className="text-4xl leading-normal " id="modalTitle">
+          <h4 className="text-4xl leading-normal" id="modalTitle">
             {result.comment}
           </h4>
           <img
             src={result.photoUrl}
             className="h-60 w-60 rounded-full border-2 border-grey-200 object-cover bg-black"
           />
-          <button type="button" className="button" onClick={onClose}>
+          <button
+            type="button"
+            className="button"
+            ref={buttonRef}
+            tabIndex={visible ? 0 : -1}
+          >
             {"Try another one"}
           </button>
         </div>
