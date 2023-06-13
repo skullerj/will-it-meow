@@ -1,0 +1,58 @@
+import { useEffect } from "react";
+import { DoesItMeowResponse } from "./utils";
+import JSConfetti from "js-confetti";
+
+export type Result = DoesItMeowResponse & { photoUrl: string };
+
+type ResultProps = {
+  result: Result;
+  visible: boolean;
+  onClose: () => void;
+};
+
+const confetti = new JSConfetti();
+
+function ResultModal({ result, visible, onClose }: ResultProps) {
+  useEffect(() => {
+    if (visible && result.isCat) {
+      confetti.addConfetti({
+        emojis: ["😸", "✨", "💫", "🐱", "😽"],
+        confettiNumber: 150,
+        emojiSize: 20,
+      });
+    }
+    () => {
+      confetti.clearCanvas();
+    };
+  }, [result.isCat, visible]);
+  return (
+    <div
+      data-te-modal-init
+      className="fixed left-0 top-0 h-full w-full overflow-hidden outline-none z-10 items-center justify-center bg-black bg-opacity-50 flex animate-modal"
+      id="resultModal"
+      aria-labelledby="modalTitle"
+      aria-modal="true"
+      aria-hidden={!visible}
+      role="dialog"
+      aria-data-success={result.isCat}
+      onClick={onClose}
+    >
+      <div className="relative flex w-fit items-center bg-white shadow-lg rounded-md">
+        <div className="flex flex-col p-6 items-center gap-4">
+          <h4 className="text-4xl leading-normal " id="modalTitle">
+            {result.comment}
+          </h4>
+          <img
+            src={result.photoUrl}
+            className="h-60 w-60 rounded-full border-2 border-grey-200 object-cover bg-black"
+          />
+          <button type="button" className="button" onClick={onClose}>
+            {"Try another one"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default ResultModal;
