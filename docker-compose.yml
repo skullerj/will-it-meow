@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+  web:
+    build: 
+      context: ./web
+    ports:
+      - "5173:5173" 
+    volumes:
+      - ./web/src:/web/src
+      - ./web/public:/web/public
+    environment:
+      - VITE_API_URL=http://127.0.0.1:5000
+  api:
+    image: api
+    build:
+      context: ./api
+    environment:
+      - FLASK_RUN_PORT=5000
+      - FLAS_RUN_HOST=0.0.0.0
+    ports:
+      - 5000:5000
+    
