@@ -23,6 +23,7 @@ function UploadButton({ onResponse }: UploadButtonProps) {
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.currentTarget.files?.[0];
       if (file) {
+        setError(null);
         setStatus("pending");
 
         uploadImage(file)
@@ -35,7 +36,8 @@ function UploadButton({ onResponse }: UploadButtonProps) {
             setStatus("resolved");
           })
           .catch((e) => {
-            setError(e.message);
+            console.error(e);
+            setError("An error occured, please try again.");
             setStatus("rejected");
           });
       }
@@ -44,12 +46,16 @@ function UploadButton({ onResponse }: UploadButtonProps) {
   );
 
   return (
-    <div>
-      {error && <p className="text-red-500 mb-2">{error}</p>}
-      <label htmlFor="photo-input" className="button">
+    <div className="flex flex-col">
+      <label htmlFor="photo-input" className="button self-center">
         {texts[status]}
       </label>
+      <p className="text-red-500 mt-2 font-sans font-bold" id="error-message">
+        {error ? error : <br />}
+      </p>
       <input
+        aria-invalid={status === "rejected"}
+        aria-errormessage="error-message"
         id="photo-input"
         ref={inputFieldRef}
         onChange={handleChange}

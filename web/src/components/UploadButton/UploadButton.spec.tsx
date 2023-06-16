@@ -1,6 +1,6 @@
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { it, vi } from "vitest";
-import UploadButton from ".";
+import UploadButton from "./UploadButton";
 import { predictions, predictionsError } from "../../mocks";
 
 describe("UploadButton", () => {
@@ -56,5 +56,7 @@ describe("UploadButton", () => {
     expect(getByText("Loading...")).toBeVisible();
 
     await findByText("Try again");
+
+    expect(input).not.toBeValid();
   });
 });
