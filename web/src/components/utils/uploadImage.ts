@@ -1,4 +1,6 @@
-export default async function uploadImage(file: File) {
+export default async function uploadImage(
+  file: File
+): Promise<{ label: string; confidence: number }> {
   const formData = new FormData();
   formData.append("image", file);
 
@@ -9,6 +11,10 @@ export default async function uploadImage(file: File) {
       "Access-Control-Allow-Origin": "*",
     },
   });
+  const result = await response.json();
+  if (response.ok) {
+    return { label: result.label, confidence: result.confidence };
+  }
 
-  return response.json();
+  throw new Error(result.error);
 }

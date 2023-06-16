@@ -1,15 +1,23 @@
 import { useCallback, useRef, useState } from "react";
 
-import { doesItMeow, DoesItMeowResponse, uploadImage } from "./utils";
+import { uploadImage } from "../utils";
 
 type Status = "idle" | "pending" | "resolved" | "rejected";
 type UploadButtonProps = {
-  onResponse: (response: DoesItMeowResponse, photoUrl: string) => void;
+  onResponse: (label: string, confidence: number, photoUrl: string) => void;
+};
+
+const texts = {
+  idle: "Try yours !",
+  pending: "Loading...",
+  resolved: "Try yours !",
+  rejected: "Try again",
 };
 
 function UploadButton({ onResponse }: UploadButtonProps) {
   const inputFieldRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<Status>("idle");
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,14 +27,15 @@ function UploadButton({ onResponse }: UploadButtonProps) {
 
         uploadImage(file)
           .then((response) => {
-            setStatus("resolved");
-
             onResponse(
-              doesItMeow(response.label, response.confidence),
+              response.label,
+              response.confidence,
               URL.createObjectURL(file)
             );
+            setStatus("resolved");
           })
-          .catch(() => {
+          .catch((e) => {
+            setError(e.message);
             setStatus("rejected");
           });
       }
@@ -34,25 +43,21 @@ function UploadButton({ onResponse }: UploadButtonProps) {
     [onResponse]
   );
 
-  const clickInputField = useCallback(() => {
-    inputFieldRef.current?.click();
-  }, []);
-
-  const isPending = status === "pending";
-
   return (
     <div>
+      {error && <p className="text-red-500 mb-2">{error}</p>}
+      <label htmlFor="photo-input" className="button">
+        {texts[status]}
+      </label>
       <input
+        id="photo-input"
         ref={inputFieldRef}
         onChange={handleChange}
         type="file"
         accept="image/png, image/gif, image/jpeg"
         name="image"
-        className="hidden"
+        className="opacity-0 absolute"
       />
-      <button className="button" onClick={clickInputField} disabled={isPending}>
-        {isPending ? "Loading..." : "Try yours !"}
-      </button>
     </div>
   );
 }
