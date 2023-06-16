@@ -44,6 +44,6 @@
     "vitest": "^0.32.0"
   },
   "lint-staged": {
-    "*.{ts,tsx}": "eslint --report-unused-disable-directives --max-warnings 0"
+    "*.{ts,tsx}": ["eslint --report-unused-disable-directives --max-warnings 0", "vitest related --run"]
   }
 }
