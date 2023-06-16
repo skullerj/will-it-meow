@@ -25,3 +25,8 @@ def predictions():
 def bad_request(error):
     """Error handler for 400 errors"""
     return {"error": error.description}, 400
+
+@app.errorhandler(404)
+def not_found():
+    """Error handler for 404 errors"""
+    return {"error": "Not found"}, 404
