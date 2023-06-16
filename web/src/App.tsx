@@ -1,12 +1,8 @@
-import { useCallback, useState } from "react";
-import {
-  UploadButton,
-  ResultModal,
-  DoesItMeowResponse,
-  Result,
-} from "./components";
+import { useCallback, useReducer } from "react";
+import { UploadButton, ResultModal, Result } from "./components";
 import cat1 from "./assets/cat_1.jpg";
 import "./index.css";
+import { doesItMeow } from "./components/utils";
 
 const testResult = {
   comment: "It meows!",
@@ -14,20 +10,54 @@ const testResult = {
   photoUrl: cat1,
 };
 
+type State = {
+  result: Result;
+  isModalVisible: boolean;
+};
+type AppAction =
+  | { type: "close-modal" }
+  | { type: "show-result"; result: Result }
+  | { type: "show-test-result" };
+
+const reducer = (state: State, action: AppAction) => {
+  switch (action.type) {
+    case "close-modal":
+      return { ...state, isModalVisible: false };
+    case "show-result":
+      return { ...state, isModalVisible: true, result: action.result };
+    case "show-test-result":
+      return { ...state, result: testResult, isModalVisible: true };
+    default:
+      return state;
+  }
+};
+
+const initialState: State = {
+  result: testResult,
+  isModalVisible: false,
+};
+
 function App() {
-  const [result, setResult] = useState<Result>(testResult);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const { result, isModalVisible } = state;
+
   const handleResponse = useCallback(
-    (response: DoesItMeowResponse, photoUrl: string) => {
-      setResult({ ...response, photoUrl });
-      setIsModalVisible(true);
+    (label: string, confidence: number, photoUrl: string) => {
+      dispatch({
+        type: "show-result",
+        result: { ...doesItMeow(label, confidence), photoUrl },
+      });
     },
     []
   );
 
   const onTestClick = useCallback(() => {
-    setResult(testResult);
-    setIsModalVisible(true);
+    dispatch({ type: "show-test-result" });
+  }, []);
+
+  const closeModal = useCallback(() => {
+    dispatch({ type: "close-modal" });
   }, []);
 
   return (
@@ -48,7 +78,7 @@ function App() {
       <ResultModal
         visible={isModalVisible}
         result={result}
-        onClose={() => setIsModalVisible(false)}
+        onClose={closeModal}
       />
     </main>
   );
