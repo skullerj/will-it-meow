@@ -7,7 +7,8 @@ services:
     ports:
       - "5173:5173" 
     volumes:
-      - ./web:/web
+      - ./web/src:/web/src
+      - ./web/public:/web/public
   api:
     image: api
     build:
